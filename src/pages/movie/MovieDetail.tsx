@@ -1,36 +1,44 @@
 import {
 	IonButton,
+	IonCard,
+	IonCardContent,
+	IonCardHeader,
+	IonCardSubtitle,
+	IonCardTitle,
 	IonCol,
 	IonContent,
 	IonGrid,
-	IonHeader,
 	IonIcon,
 	IonInput,
 	IonItem,
 	IonLabel,
-	IonPage,
 	IonRow,
 	IonSelect,
 	IonSelectOption,
-	IonTitle,
-	IonToolbar,
+	IonText,
 } from "@ionic/react"
-import {
-	calculatorOutline,
-	refreshOutline,
-	arrowForwardCircleOutline,
-	addCircleOutline,
-} from "ionicons/icons"
+import { addCircleOutline, refreshOutline } from "ionicons/icons"
+import React, { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import { deleteMovieById, getMovieById, updateMovie } from "../../api/api"
+import { Movie } from "../../interfaces"
 
-import React, { SetStateAction, useEffect, useState } from "react"
-import { addMovie, getMovies } from "../api/api"
-import ExploreContainer from "../components/ExploreContainer"
-import "./Home.css"
-import { Movie } from "../interfaces"
-import { Link } from "react-router-dom"
+const decodeGenre: (genId: number) => string = genId => {
+	switch (genId) {
+		case 1:
+			return "action"
+		case 2:
+			return "horror"
+		case 3:
+			return "comedy"
+	}
 
-const Home: React.FC = () => {
-	const [movies, setMovies] = useState<Movie[]>([])
+	return ``
+}
+
+const MovieDetail: React.FC = () => {
+	const { id } = useParams<{ id: string | undefined }>()
+	const [movie, setMovie] = useState<Movie>()
 	const [title, setTitle] = useState<string>("")
 	const [year, setYear] = useState<number>(0)
 	const [rating, setRating] = useState<number>(0)
@@ -39,50 +47,51 @@ const Home: React.FC = () => {
 	const [duration, setDuration] = useState<number>(0)
 	useEffect(() => {
 		const fetchData = async () => {
-			const data = await getMovies()
-			setMovies(data)
+			const data = await getMovieById(Number(id))
+			setMovie(data)
 		}
 		fetchData()
 	}, [])
+	const sendMovieToUpdate = async (e: React.FormEvent) => {
+		e.preventDefault()
+		const status = await  updateMovie({
+		  id:movie?.id!,	
+		  title:title,
+		  duration:duration,
+		  yearOfRelease:year,
+		  description,
+		  genre,
+		  rating,
+		},Number(id))
+	
+	  }
 
-	const sendMovie = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const status = await  addMovie({
-      title:title,
-      duration:duration,
-      yearOfRelease:year,
-      description,
-      genre,
-      rating,
-    })
-
-  }
-  
+	const handleDelete = async (e: React.MouseEvent) => {
+		await deleteMovieById(Number(id))
+		window.location.href = "/"
+	}
+	if (!movie) return <p>Loading...</p>
 	return (
-		<IonContent className="ion-padding">
+		<IonContent>
+			<IonCard>
+				<IonCardHeader>
+					<IonCardSubtitle>{decodeGenre(movie.genre)}</IonCardSubtitle>
+					<IonCardTitle>{movie.title}</IonCardTitle>
+					<IonText>
+						<p>Duration:{movie.duration} minutes</p>
+					</IonText>
+					<IonText>
+						<p>Year of Release: {movie.yearOfRelease}</p>
+					</IonText>
+					<IonText>
+						<p>rating: {movie.rating}</p>
+					</IonText>
+				</IonCardHeader>
+
+				<IonCardContent>Short description: {movie.description}</IonCardContent>
+			</IonCard>
 			<IonGrid>
-				{movies.length
-					? movies.map(movie => (
-							<IonRow key={movie.id}>
-								<IonCol>
-									<IonItem>
-										<IonLabel>{movie.title}</IonLabel>
-										<Link to={`/movies/${movie.id}`}>
-											<IonIcon slot="end" icon={arrowForwardCircleOutline} />
-										</Link>
-									</IonItem>
-								</IonCol>
-							</IonRow>
-					  ))
-					: "loading..."}
-				<IonRow>
-					<IonCol>
-						<IonItem>
-							<h2>Enter a new movie</h2>
-						</IonItem>
-					</IonCol>
-				</IonRow>
-				<form method="post" onSubmit={e => sendMovie(e)}>
+			<form method="post" onSubmit={e => sendMovieToUpdate(e)}>
 					<IonRow>
 						<IonCol>
 							<IonItem>
@@ -152,7 +161,7 @@ const Home: React.FC = () => {
 						<IonCol className="ion-text-left">
 							<IonButton type="submit">
 								<IonIcon slot="start" icon={addCircleOutline} />
-								Add Movie
+							  Update movie
 							</IonButton>
 						</IonCol>
 						<IonCol className="ion-text-right">
@@ -163,9 +172,14 @@ const Home: React.FC = () => {
 						</IonCol>
 					</IonRow>
 				</form>
+
 			</IonGrid>
+			<IonButton onClick={e => handleDelete(e)} type="reset">
+				<IonIcon slot="start" />
+				Delete
+			</IonButton>
 		</IonContent>
 	)
 }
 
-export default Home
+export default MovieDetail
