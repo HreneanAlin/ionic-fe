@@ -28,3 +28,22 @@ export interface MovieNew {
 
 	rating: number
 }
+
+export interface UserForRegistration {
+	email: string
+	password: string
+	confirmPassword: string
+}
+export interface UserForLogin {
+	email: string
+	password: string
+}
+
+export interface ConfirmUser {
+	email?: string
+	confirmationToken: string
+}
+export interface Jwt {
+	token?: string
+	expiration?: string
+}

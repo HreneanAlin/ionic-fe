@@ -41,24 +41,32 @@ import "./theme/variables.css"
 import React, { useState, useEffect } from "react"
 import { getMovies } from "./api/api"
 import Movie from "./pages/movie/MovieDetail"
+import Register from "./pages/register/Register"
+import Login from "./pages/login/Login"
+import Logout from "./pages/logout/Logout"
 
 const App: React.FC = () => {
 	return (
 		<IonApp>
-			{/* <IonHeader>
-				<IonToolbar color="primary">
-					<IonTitle>Our Movies</IonTitle>
-				</IonToolbar>
-			</IonHeader> */}
+		
 			<IonReactRouter>
 				<IonRouterOutlet>
 					<Route path="/movies" exact>
 						<Home />
 					</Route>
 					<Route path="/movies/:id">
-                         <Movie/>
+						<Movie />
 					</Route>
 					<Redirect exact from="/" to="/movies" />
+					<Route path="/register">
+						<Register />
+					</Route>
+					<Route path="/login">
+						<Login />
+					</Route>
+					<Route path="/logout">
+						<Logout />
+					</Route>
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
