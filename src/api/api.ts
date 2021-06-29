@@ -13,8 +13,24 @@ import {
 const BASE_URL: string = "https://localhost:5001/api"
 const jwt = JSON.parse(localStorage.getItem("jwt")!) as Jwt
 
-export const getMovies = async () => {
-	const { data } = await axios.get(`${BASE_URL}/Movie`)
+export const getMovies = async (page?:number, perPage?:number) => {
+	const { data } = await axios.get(`${BASE_URL}/Movie`,{
+		params:{
+			page: page,
+			perPage: perPage
+		}
+	})
+    console.log("🚀 ~ file: api.ts ~ line 18 ~ getMovies ~ data", data)
+	return data
+}
+export const getComments = async (movieId:number, page?:number, perPage?:number) => {
+	const { data } = await axios.get(`${BASE_URL}/Movie/${movieId}/Comments`,{
+		params:{
+			page: page,
+			perPage: perPage
+		}
+	})
+    console.log("🚀 ~ file: api.ts ~ line 18 ~ getComments ~ data", data)
 	return data
 }
 
@@ -76,3 +92,4 @@ export const sendConfirmUser = async (confirmUser: ConfirmUser) => {
 	console.log("🚀 ~ file: api.ts ~ line 42 ~ registerUser ~ data", status)
 	return status
 }
+

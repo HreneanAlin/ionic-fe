@@ -26,27 +26,31 @@ import React, { SetStateAction, useEffect, useState } from "react"
 import { addMovie, getMovies } from "../api/api"
 import ExploreContainer from "../components/ExploreContainer"
 import "./Home.css"
-import { Jwt, Movie } from "../interfaces"
+import { Jwt, Movie, PaginatedResult } from "../interfaces"
 import { Link } from "react-router-dom"
+import { Pagination } from "../components/Pagination"
 
 const Home: React.FC = () => {
-	const [movies, setMovies] = useState<Movie[]>([])
+	const [pagination, setPagination] = useState<
+		PaginatedResult<Movie> | undefined
+	>()
 	const [title, setTitle] = useState<string>("")
 	const [year, setYear] = useState<number>(0)
 	const [rating, setRating] = useState<number>(0)
 	const [description, setDescription] = useState<string>("")
 	const [genre, setGenre] = useState<number>(0)
 	const [duration, setDuration] = useState<number>(0)
+	const [pageNr,setPageNr] = useState<number>(1)
+    console.log("🚀 ~ file: Home.tsx ~ line 43 ~ pageNr", pageNr)
 	const [jwt, setJwt] = useState<Jwt | null>(
 		JSON.parse(localStorage.getItem("jwt")!)
 	)
 	useEffect(() => {
 		const fetchData = async () => {
-			const data = await getMovies()
-			setMovies(data)
+			setPagination((await getMovies(pageNr,20)) as PaginatedResult<Movie>)
 		}
 		fetchData()
-	}, [])
+	}, [pageNr])
 
 	const sendMovie = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -60,11 +64,15 @@ const Home: React.FC = () => {
 		})
 	}
 
+	const getCurrentPage = (next: number = 1, one: number) => {
+		return next - one
+	}
+
 	return (
 		<IonContent className="ion-padding">
 			<IonGrid>
-				{movies.length
-					? movies.map(movie => (
+				{pagination?.entities
+					? pagination.entities.map(movie => (
 							<IonRow key={movie.id}>
 								<IonCol>
 									<IonItem>
@@ -77,6 +85,7 @@ const Home: React.FC = () => {
 							</IonRow>
 					  ))
 					: "loading..."}
+				<Pagination setPageNr={setPageNr} pagination={pagination!} />
 				{jwt ? (
 					<>
 						<IonRow>

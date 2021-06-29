@@ -21,6 +21,7 @@ import { addCircleOutline, refreshOutline } from "ionicons/icons"
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { deleteMovieById, getMovieById, updateMovie } from "../../api/api"
+import { Comments } from "../../components/Comments"
 import { Jwt, Movie } from "../../interfaces"
 
 const decodeGenre: (genId: number) => string = genId => {
@@ -95,6 +96,7 @@ const MovieDetail: React.FC = () => {
 
 				<IonCardContent>Short description: {movie.description}</IonCardContent>
 			</IonCard>
+			<Comments movieId={movie.id}/>
 			{jwt ? <>
 				<IonGrid>
 					<form method="post" onSubmit={e => sendMovieToUpdate(e)}>

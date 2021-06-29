@@ -47,3 +47,18 @@ export interface Jwt {
 	token?: string
 	expiration?: string
 }
+
+export interface PaginatedResult<Type> {
+	currentPage: number,
+	firstPages: number[],
+	lastPages: number[],
+	nextPages: number[],
+	totalEntities:number,
+	entities:Type[]
+}
+
+export interface Comment{
+	text: string,
+	id: number, 
+	important:boolean
+}
