@@ -13,6 +13,7 @@ import { addCircleOutline, refreshOutline } from "ionicons/icons"
 import React, { useState } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { Redirect } from "react-router"
+import { Link } from "react-router-dom"
 import { loginUser } from "../../api/api"
 import { Jwt, UserForLogin, UserForRegistration } from "../../interfaces"
 import { register } from "../../serviceWorkerRegistration"
@@ -21,16 +22,20 @@ const Login: React.FC = () => {
 	const { register, handleSubmit } = useForm<UserForLogin>()
 	const [wrong, setWrong] = useState(false)
 	const [done, setDone] = useState(false)
+	const [jwt, setJwt] = useState<Jwt | null>(
+		JSON.parse(localStorage.getItem("jwt")!)
+	)
 	const onSubmit = async (data: SubmitHandler<UserForLogin>) => {
 		try {
 			const jwt = (await loginUser(data)) as Jwt
 			localStorage.setItem("jwt", JSON.stringify(jwt))
 			setDone(true)
+			window.location.replace("/")
 		} catch (err) {
 			setWrong(true)
 		}
 	}
-	if (done) {
+	if (jwt) {
 		return <Redirect to="/" />
 	}
 
@@ -74,6 +79,9 @@ const Login: React.FC = () => {
 					</IonRow>
 				</form>
 			</IonList>
+			<IonText>
+				<p>Don't have an account? <Link to="/register">register</Link></p>
+			</IonText>
 		</IonContent>
 	)
 }

@@ -59,6 +59,6 @@ export interface PaginatedResult<Type> {
 
 export interface Comment{
 	text: string,
-	id: number, 
+	id?: number, 
 	important:boolean
 }

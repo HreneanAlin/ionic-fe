@@ -1,9 +1,9 @@
 import { IonRow, IonCol, IonItem, IonButton } from "@ionic/react"
 import React from "react"
-import { Movie, PaginatedResult,Comment } from "../interfaces"
+import { Movie, PaginatedResult, Comment } from "../interfaces"
 
 interface PaginationProps {
-	pagination: PaginatedResult<Movie | Comment >
+	pagination: PaginatedResult<Movie | Comment>
 	setPageNr: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -24,7 +24,20 @@ export const Pagination: React.FC<PaginationProps> = ({
 							{pageNr}
 						</IonButton>
 					))}
-					<IonButton color="success" size="small">
+					{pagination?.currentPage > 6 ? (
+						<IonButton disabled size="small">
+							...
+						</IonButton>
+					) : null}
+
+					{/* {!pagination?.nextPages.length ? (
+						<>
+							<IonButton disabled size="small">
+								...
+							</IonButton>
+						</>
+					) : null} */}
+					<IonButton disabled color="success" size="small">
 						{pagination?.currentPage}
 					</IonButton>
 					{pagination?.nextPages.map(pageNr => (
@@ -38,7 +51,9 @@ export const Pagination: React.FC<PaginationProps> = ({
 					))}
 					{pagination?.lastPages.length ? (
 						<>
-							<IonButton size="small">...</IonButton>
+							<IonButton disabled size="small">
+								...
+							</IonButton>
 							{pagination?.lastPages.map(pageNr => (
 								<IonButton
 									key={pageNr}

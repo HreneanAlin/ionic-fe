@@ -12,14 +12,17 @@ import {
 import { addCircleOutline, refreshOutline } from "ionicons/icons"
 import React, { useState } from "react"
 import { useForm, SubmitHandler } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, Redirect } from "react-router-dom"
 import { registerUser, sendConfirmUser } from "../../api/api"
-import { ConfirmUser, UserForRegistration } from "../../interfaces"
+import { ConfirmUser, Jwt, UserForRegistration } from "../../interfaces"
 
 const Register: React.FC = () => {
 	const { register, handleSubmit } = useForm<UserForRegistration>()
 	const [email, setEmail] = useState<string>()
 	const [done, setDone] = useState<boolean>(false)
+	const [jwt, setJwt] = useState<Jwt | null>(
+		JSON.parse(localStorage.getItem("jwt")!)
+	)
 
 	const onSubmit = async (data: SubmitHandler<UserForRegistration>) => {
 		const confirmUser = (await registerUser(data)) as ConfirmUser
@@ -28,6 +31,9 @@ const Register: React.FC = () => {
 		if (status === 200) {
 			setDone(true)
 		}
+	}
+	if (jwt) {
+		return <Redirect to="/" />
 	}
 	if (done) {
 		return (
@@ -88,6 +94,11 @@ const Register: React.FC = () => {
 					</IonRow>
 				</form>
 			</IonList>
+			<IonText>
+				<p>
+					Have an account? <Link to="/login">login</Link>
+				</p>
+			</IonText>
 		</IonContent>
 	)
 }

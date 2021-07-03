@@ -8,6 +8,7 @@ import {
 	IonInput,
 	IonItem,
 	IonLabel,
+	IonListHeader,
 	IonPage,
 	IonRow,
 	IonSelect,
@@ -40,17 +41,19 @@ const Home: React.FC = () => {
 	const [description, setDescription] = useState<string>("")
 	const [genre, setGenre] = useState<number>(0)
 	const [duration, setDuration] = useState<number>(0)
-	const [pageNr,setPageNr] = useState<number>(1)
-    console.log("🚀 ~ file: Home.tsx ~ line 43 ~ pageNr", pageNr)
+	const [pageNr, setPageNr] = useState<number>(1)
+	const [itemsPerPage, setItemsPerPage] = useState<number>(10)
 	const [jwt, setJwt] = useState<Jwt | null>(
 		JSON.parse(localStorage.getItem("jwt")!)
 	)
 	useEffect(() => {
 		const fetchData = async () => {
-			setPagination((await getMovies(pageNr,20)) as PaginatedResult<Movie>)
+			setPagination(
+				(await getMovies(pageNr, itemsPerPage)) as PaginatedResult<Movie>
+			)
 		}
 		fetchData()
-	}, [pageNr])
+	}, [pageNr, itemsPerPage])
 
 	const sendMovie = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -64,13 +67,37 @@ const Home: React.FC = () => {
 		})
 	}
 
-	const getCurrentPage = (next: number = 1, one: number) => {
-		return next - one
-	}
-
 	return (
 		<IonContent className="ion-padding">
 			<IonGrid>
+				<IonItem>
+					<IonListHeader color="primary">
+						<IonLabel>
+							{jwt ? (
+								<> Welcome you are loged in. <Link style={{color:"white"}} to="logout">logout</Link></>
+							) : (
+								<>
+									Clik here to <Link style={{color:"white"}} to="/login">login</Link> ? Don't have an
+									account? <Link  style={{color:"white"}} to="/register">register</Link>
+								</>
+							)}
+						</IonLabel>
+					</IonListHeader>
+				</IonItem>
+				<IonItem>
+					<IonLabel>Items per page</IonLabel>
+					<IonSelect
+						onIonChange={e => setItemsPerPage(Number(e.detail.value!))}
+						okText="Okay"
+						cancelText="Dismiss"
+					>
+						{[...Array(40).keys()].slice(6).map(num => (
+							<IonSelectOption value={num}>{num}</IonSelectOption>
+						))}
+					</IonSelect>
+				</IonItem>
+				<Pagination setPageNr={setPageNr} pagination={pagination!} />
+
 				{pagination?.entities
 					? pagination.entities.map(movie => (
 							<IonRow key={movie.id}>

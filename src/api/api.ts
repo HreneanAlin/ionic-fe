@@ -8,29 +8,52 @@ import {
 	MovieUpdated,
 	UserForLogin,
 	UserForRegistration,
+	Comment,
 } from "../interfaces"
 
 const BASE_URL: string = "https://localhost:5001/api"
 const jwt = JSON.parse(localStorage.getItem("jwt")!) as Jwt
 
-export const getMovies = async (page?:number, perPage?:number) => {
-	const { data } = await axios.get(`${BASE_URL}/Movie`,{
-		params:{
+export const getMovies = async (page?: number, perPage?: number) => {
+	const { data } = await axios.get(`${BASE_URL}/Movie`, {
+		params: {
 			page: page,
-			perPage: perPage
-		}
+			perPage: perPage,
+		},
 	})
-    console.log("🚀 ~ file: api.ts ~ line 18 ~ getMovies ~ data", data)
+	console.log("🚀 ~ file: api.ts ~ line 18 ~ getMovies ~ data", data)
 	return data
 }
-export const getComments = async (movieId:number, page?:number, perPage?:number) => {
-	const { data } = await axios.get(`${BASE_URL}/Movie/${movieId}/Comments`,{
-		params:{
+export const getComments = async (
+	movieId: number,
+	page?: number,
+	perPage?: number
+) => {
+	const { data } = await axios.get(`${BASE_URL}/Movie/${movieId}/Comments`, {
+		params: {
 			page: page,
-			perPage: perPage
-		}
+			perPage: perPage,
+		},
 	})
-    console.log("🚀 ~ file: api.ts ~ line 18 ~ getComments ~ data", data)
+	console.log("🚀 ~ file: api.ts ~ line 18 ~ getComments ~ data", data)
+	return data
+}
+export const postComment = async (
+	movieId: number,
+	comment: SubmitHandler<Comment>
+) => {
+	console.log(comment)
+	
+	const { data } = await axios.post(
+		`${BASE_URL}/Movie/${movieId}/Comments`,
+		comment,
+		{
+			headers: {
+				Authorization: `Bearer ${jwt.token}`,
+			},
+		}
+	)
+	console.log("🚀 ~ file: api.ts ~ line 18 ~ postgComments ~ data", data)
 	return data
 }
 
@@ -41,7 +64,7 @@ export const getMovieById = async (id: number) => {
 	return data
 }
 export const deleteMovieById = async (id: number) => {
-	const { data } = await axios.delete(`${BASE_URL}/Movie/${id}`,{
+	const { data } = await axios.delete(`${BASE_URL}/Movie/${id}`, {
 		headers: {
 			Authorization: `Bearer ${jwt.token}`,
 		},
@@ -62,7 +85,7 @@ export const addMovie = async (movie: MovieNew) => {
 	return status
 }
 export const updateMovie = async (movie: MovieUpdated, id: number) => {
-	const { status } = await axios.put(`${BASE_URL}/Movie/${id}`, movie,{
+	const { status } = await axios.put(`${BASE_URL}/Movie/${id}`, movie, {
 		headers: {
 			Authorization: `Bearer ${jwt.token}`,
 		},
@@ -92,4 +115,3 @@ export const sendConfirmUser = async (confirmUser: ConfirmUser) => {
 	console.log("🚀 ~ file: api.ts ~ line 42 ~ registerUser ~ data", status)
 	return status
 }
-
